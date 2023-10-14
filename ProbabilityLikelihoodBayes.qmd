@@ -1,0 +1,518 @@
+---
+title: "Probability, likelihood and Bayes"
+subtitle: "Day 1"
+author: "Manuele Bazzichetto"
+format: 
+  revealjs:
+    slide-number: true
+editor: visual
+appearance:
+  code-block-background: true
+---
+
+```{r}
+library(ggplot2)
+library(ggpubr)
+library(patchwork)
+library(palmerpenguins)
+```
+
+## Probability
+
+Meaning? Depends on who you ask to..
+
+::: {style="font-size: 90%;"}
+**Frequentist**: Essentially, the (long-run) relative frequency (or proportion) of an event happening
+
+**Bayesian**: Essentially, the relative plausibility of an event happening given what we already know about what generates events and what we actually observe (i.e., data)
+:::
+
+\
+
+::: {style="text-align: center;"}
+Which one is best?
+:::
+
+::: {style="font-size: 200%;color: red;text-align: center;"}
+**NONE**
+:::
+
+::: {style="text-align: center;"}
+**Both are useful**
+:::
+
+## Probability rules
+
+"Frequentist" or "bayesian"..probabilities obey to rules:
+
+::: {style="font-size: 75%;text-align: left;"}
+-   Number bounded between 0 and 1 (i.e., $0\leq Pr \leq1$)
+:::
+
+::: {.incremental style="font-size: 75%;text-align: left;"}
+-   **Union** (mutually exclusive): $Pr(A \cup B) = Pr(A) + Pr(B)$, if $Pr(A \cap B) = 0$
+
+-   **Intersection**: $Pr(A \cap B)$
+
+-   **Union** (not mutually exclusive): $Pr(A \cup B) = Pr(A) + Pr(B) - Pr(A \cap B)$
+
+-   **Joint** probability: $Pr(A) \cdot Pr(B)$, if A and B are independent
+
+-   **Independence**: $Pr(A|B)=Pr(A)$ and $Pr(B|A)=Pr(B)$
+
+-   **Conditional** probability: $Pr(A|B)=\frac{Pr(A \cap B)}{Pr(B)}$
+:::
+
+::: {style="font-size: 60%;"}
+$\cup$: read it like "probability of either A **OR** B or both occurring"
+
+$\cap$: read it like "probability of A **AND** B simultaneously occurring"
+:::
+
+## Probability rules
+
+::: {style="font-size: 100%;text-align: left;"}
+Note that, under independence between A and B: [^1]
+
+$Pr(A|B)=\frac{Pr(A \cap B)}{Pr(B)}\\Pr(A)\cdot Pr(B)=Pr(A \cap B)$
+
+<br />
+
+While, under lack of independence between A and B: [^2]
+
+$Pr(A|B)=\frac{Pr(A \cap B)}{Pr(B)}\\Pr(A|B)\cdot Pr(B)=Pr(A \cap B)$
+:::
+
+[^1]: We will need it to build the likelihood
+
+[^2]: We will need it to derive Bayes rule
+
+## A note on pdf *vs.* pmf
+
+Discrete measures 👉 **probability**
+
+Continuous measures 👉 **density**
+
+\
+
+::: {style="font-size: 90%;"}
+-   The probability for any specific value of a continuous measure is $0$\
+
+-   Densities are related to (but not exactly the same as) probabilities\
+
+-   Both still obey to probability rules: pdf(s) integrate to 1; pmf sum up to 1
+:::
+
+## [A note on cumulative distribution function(s)]{style="font-size: 80%;"}
+
+::: {style="font-size: 60%;"}
+Cdf(s) map measures to the probability of them assuming a specific (or lower) value
+
+Usually written as: $F = Pr(X \leq x)$
+
+Cdf(s) exist for both continuous and discrete measures
+:::
+
+```{r}
+#| fig-pos: "b"
+pdf_plot <- ggplot(data.frame(x = c(-4, 4)), aes(x)) +
+  stat_function(fun = dnorm, xlim = c(-4, 0), geom = "area", fill = "orange") +
+  stat_function(fun = dnorm, lwd = 1.2) + 
+  ylab("Density") + xlab(NULL) +
+  theme_pubclean() +
+  theme(text = element_text(size = 20))
+
+cdf_plot <- ggplot(data.frame(x = c(-4, 4)), aes(x)) +
+  stat_function(fun = pnorm, xlim = c(-4, 0), geom = "area", fill = "orange") +
+  stat_function(fun = pnorm, lwd = 1.2) + 
+  ylab("Probability") + xlab(NULL) +
+  theme_pubclean() +
+  theme(text = element_text(size = 20))
+
+pdf_plot | cdf_plot
+
+```
+
+## A note on quantiles
+
+::: {style="font-size: 65%;"}
+Quantiles are values assumed by a measure that split its pdf (or pmf) in two groups of observations
+
+Example: percentiles split a probability distribution in 100 samples of measures of equal size (and probability)
+
+Example: the median is the 2nd quartile
+:::
+
+```{r}
+#| fig-pos: "b"
+qnt_plot <- ggplot(data.frame(x = c(-4, 4)), aes(x)) +
+  stat_function(fun = dnorm, xlim = c(-4, -1.96), geom = "area", fill = "orange") +
+  stat_function(fun = dnorm, xlim = c(-1.96, 4), geom = "area", fill = "green") +
+  stat_function(fun = dnorm, lwd = 1.2) + 
+  geom_vline(xintercept = -1.96, col = "red", lty = "dotdash") +
+  annotate(geom = "text", x = -2.1, y = 0.3, label = "2.5 percentile", col = "black", angle = 90, size = 4) +
+  annotate(geom = "text", x = 0, y = 0.2, label = "Pr(Measure > -1.96) = 0.975", col = "black", size = 4) +
+  annotate(geom = "text", x = -3, y = 0.1, label = "Pr(Measure <= -1.96) = 0.025", col = "black", size = 4) +
+  ylab("Density") + xlab(NULL) +
+  theme_pubclean() +
+  theme(text = element_text(size = 20))
+
+
+qnt_plot
+```
+
+## R makes it easy
+
+::: columns
+::: {.column width="50%" layout-nrow="2"}
+```{r}
+#| fig-pos: "b"
+pdf_plot
+cdf_plot
+```
+:::
+
+::: {.column width="50%"}
+The Fantastic 4
+
+::: {style="font-size: 65%;"}
+d\*, p\*, q\*, r\*
+
+**d**\*: compute density (cont.) or probability (discr.)
+
+**p**\*: returns $Pr(measure\leq quantile)$ (mind the tail argument)
+
+**q**\*: returns quantile for a given $Pr(measure\leq quantile)$ (mind the tail argument)
+
+**r**\*: draw random values of measures from a model\
+:::
+
+::: {style="font-size: 65%;"}
+Examples:
+
+Gaussian: dnorm, pnorm, qnorm, rnorm
+
+Binomial: dbinom, pbinom, qbinom, rbinom
+:::
+:::
+:::
+
+## Data, models, probability
+
+\
+
+Data: information we have available
+
+Model: a set of assumptions to describe a simplified version of reality
+
+Parametric model: Model described by parameters (see pdf(s) and pmf(s))
+
+Probability: how measures behave according to our model
+
+# Likelihood and ML estimation
+
+## 
+
+We have data and models, what do we do now?
+
+**Let's use data to estimate model parameters!**
+
+\
+
+::: columns
+::: {.column width="30%"}
+::: {style="font-size: 70%;"}
+```{r}
+data("penguins")
+
+penguins <- as.data.frame(penguins)
+
+PinguMeanBodyMass <- mean(penguins$body_mass_g[penguins$species == "Gentoo"], na.rm = T)
+
+PinguSdBodyMass <- sd(penguins$body_mass_g[penguins$species == "Gentoo"], na.rm = T)
+
+set.seed(10)
+PinguBodyMass <- rnorm(500, mean = PinguMeanBodyMass, sd = PinguSdBodyMass) 
+
+PinguBodyMass <- data.frame(ID = seq_along(PinguBodyMass), BodyMass = PinguBodyMass)
+
+PinguBodyMass$BodyMassDens <- with(PinguBodyMass, dnorm(BodyMass, mean = PinguMeanBodyMass, sd = PinguSdBodyMass))
+
+knitr::kable(PinguBodyMass[1:8, c(1, 2)])
+```
+:::
+:::
+
+::: {.column width="70%"}
+```{r}
+#| fig-pos: "b"
+#| fig-width: 14
+
+ggplot(PinguBodyMass, aes(x = BodyMass)) +
+  geom_histogram(fill = "orange", aes(y = ..density..)) +  
+  geom_line(data = PinguBodyMass, aes(x = BodyMass, y = BodyMassDens), col = "black", lwd = 2) +
+  ggtitle("Gentoo body mass") +
+  ylab(NULL) + xlab(NULL) +
+  theme_pubclean() +
+  theme(title = element_text(size = 24), axis.title.x = element_text(size = 22),
+        axis.text.x.bottom = element_text(size = 22))
+```
+
+::: {style="font-size: 70%"}
+**Assumption**: Body mass of (all existing) Gentoo's penguins is normally distributed with some mean and variance
+:::
+
+::: {style="font-size: 70%"}
+
+**Parametric model**: $Gentoo\hspace{1 mm}body\hspace{1 mm}size \sim \mathcal{N}(\mu,\, \sigma^{2})$
+:::
+:::
+:::
+
+## Likelihood function
+
+::: {style="font-size: 65%;text-align: left;"}
+- $Probability(BodyMass = 3000) \rightarrow Pr(BM_i = value_i)$
+::: 
+
+::: {.fragment .fade-in style="font-size: 65%;text-align: left;"}
+- $Pr(BM_1 = value_1) \times Pr(BM_2 = value_2) \hspace{1 mm} \times \hspace{1 mm} ... \hspace{1 mm}\times \hspace{1 mm} Pr(BM_n = value_n)$
+:::
+
+::: {.fragment .fade-in style="font-size: 65%;text-align: left;"}
+- $\prod\limits_{i=1}^{n} Pr(BM_i = value_i)$
+:::
+
+::: {.fragment .fade-in style="font-size: 65%;text-align: left;"}
+- $Likelihood \hspace{1 mm} (L) = \prod\limits_{i=1}^{n} Pr(BM_i = value_i|\mu,\sigma^2), \hspace{1 mm} with \hspace{1 mm} Pr \hspace{1 mm} being \hspace{1 mm} the \hspace{1 mm} Gaussian \hspace{1 mm} pdf$
+:::
+
+::: {.fragment .fade-in style="font-size: 90%;text-align: left;"}
+**Maximizing the joint probability of the data|parameters allows finding the parameter(s) that maximize(s) the L of observing the data (under the assumed model)!**
+:::
+
+\
+
+::: {.fragment .fade-in style="font-size: 100%;text-align: center;color: red;"} 
+**Likelihood(parameters|data) = Probability(data|parameters)**
+:::
+
+
+## Maximum likelihood estimation
+
+:::: {.columns}
+
+::: {.column width="80"}
+Link data, model and L
+
+
+::: {style="font-size: 60%;"}
+**Data**: sample of $n$ penguins on which we measure BM 
+
+**Model**:
+
+$BM \sim \mathcal{N}(\mu,\,\sigma^{2})\\$
+
+**Probability** (density) for $BM_i$:
+
+$f(x) = \frac{1}{\sigma \sqrt{2\pi} } e^{-\frac{1}{2}\left(\frac{BM_i-\mu}{\sigma}\right)^2}$
+
+**L** (given model):
+
+$\prod\limits_{i=1}^{n} \frac{1}{\sigma \sqrt{2\pi} } e^{-\frac{1}{2}\left(\frac{BM_i-\mu}{\sigma}\right)^2}$
+
+"Move" along combinations of $\mu$ and $\sigma^2$ and find those that maximize L
+:::
+
+:::
+
+::: {.column width="50%"}
+![](Images/likel_surf.jpg)
+
+:::
+
+
+::::
+
+## Maximum likelihood estimation
+
+We usually maximize the log-Likelihood (LL) for two main reasons:
+
+- Products become sums:
+
+$log(\prod\limits_{i=1}^{n}X_i) = \sum\limits_{i=1}^{n}log(X_i)$
+
+- Easier to work with exponential functions (like lots of pdfs and pmfs)
+
+## Examples
+
+We will:
+
+- Estimate the **population** mean of Gentoo's body mass using brute force
+
+- Estimate regression parameters for the relationship between Gentoo's body mass and flipper length (without using brute force)
+
+- Estimate rate parameter of a Poisson population
+
+::: {style="font-size: 200%;text-align: center;"}
+NOW GO TO R..
+:::
+
+## 
+
+::: columns
+::: column
+What I think I am doing
+
+<br>
+
+```{r}
+ggplot(penguins, aes(x = body_mass_g, y = flipper_length_mm)) +
+  geom_point(alpha = .5, col = "black", fill = "lightgrey") +
+  geom_smooth(method = "lm", formula = y ~ x, se = F) +
+  xlab("Flipper length") + ylab("Body size") +
+  theme_pubclean() +
+  theme(title = element_text(size = 24), axis.title = element_text(size = 22),
+        axis.text = element_text(size = 22))
+```
+
+**Model**:
+
+::: {style="font-size: 90%"}
+$\mu_i = \alpha + \beta \cdot flipper\hspace{1mm}length_i$
+:::
+:::
+
+::: column
+What I am actually doing
+
+::: {style="font-size: 60%;"}
+![From [Applied regression analysis and generalized linear models](https://socialsciences.mcmaster.ca/jfox/Books/Applied-Regression-3E/bayes.html) - Fox](Images/AssumptionsRegression){width="700"}
+:::
+
+**Model**:
+
+::: {style="font-size: 70%;"}
+$Gentoo\hspace{1 mm}body\hspace{1 mm}size_i \sim \mathcal{N}(\mu_i,\, \sigma^{2})$
+
+$\mu_i = \alpha + \beta \cdot flipper\hspace{1mm}length_i$
+:::
+:::
+:::
+
+## Poisson
+
+::: columns
+::: {.column width="60%"}
+```{r}
+Poisson_mass <- dpois(seq(from = 0, to = 30), lambda = 5)
+
+ggplot(data = data.frame(Proba = Poisson_mass[1:19], Outcome = as.factor(seq(from = 0, to = 18))),
+       aes(x = Outcome, y = Proba)) +
+  geom_col() +
+  ylab("Probability") + xlab(NULL) +
+  theme_pubclean() +
+  theme(text = element_text(size = 20))
+```
+
+::: {style="font-size: 60%;"}
+$Y \sim Pois(\lambda)\\,with\hspace{1mm} Y\hspace{1mm} assuming \hspace{1mm}value\hspace{1mm} \geq 0$
+:::
+
+:::
+
+::: {.column width="40%"}
+
+::: {style="font-size: 80%;"}
+Pmf: $Pr(Y) = \frac{\lambda^Y\exp^{-\lambda}}{Y!}$
+:::
+
+\
+
+::: {style="font-size: 70%;"}
+- $Mean = variance$
+- Limiting case of binomial with $N$ large and $p$ small
+- Used to model counts with not known upper bound
+- Converges to Gaussian as $\lambda$ gets large
+:::
+:::
+:::
+
+## Things to keep in mind
+
+- Likelihood function $\neq$ Pdf
+
+- We found the MLE(s). Does this mean that we now know the population parameters? NO!
+
+- From the shape of the LL, we can estimate how precisely we estimate population parameters
+
+
+# Bayes' rule and bayesian stats
+
+## The Bayes' rule
+
+A re-arrangement of conditional probability:
+
+**Conditional** probability: $Pr(A|B)=\frac{Pr(A \cap B)}{Pr(B)}$
+
+::: {.incremental style="font-size: 80%;"}
+- $Pr(A|B)=\frac{Pr(A \cap B)}{Pr(B)}$
+
+- $Pr(A|B)Pr(B)=Pr(A \cap B)$
+
+- But $Pr(A \cap B) = Pr(B \cap A)$
+
+- And $Pr(B \cap A) = Pr(B|A)Pr(A)$
+
+- So $Pr(A|B)Pr(B) = Pr(B|A)Pr(A)$
+
+- Dividing both sides by $Pr(B)$ we end up with:
+:::
+
+::: {.fragment .fade-in}
+**Bayes' rule**: $Pr(A|B) = \frac{Pr(B|A)Pr(A)}{Pr(B)}$
+:::
+
+## But what does it mean??
+
+$Pr$: we are familiar with them (pdf(s), pmf(s))
+
+\
+
+$Pr(B|A)$: what if I tell you that $B$ is **data** and $A$ parameters?
+
+::: {.fragment .fade-in}
+
+::: {style="text-align: center;"}
+**WELL DONE! IT'S THE LIKELIHOOD!**
+:::
+
+:::
+
+\
+
+
+
+\
+
+$Pr(A)$: prior..a model for the parameter(s) 🤯
+ 
+## Why chosing Bayes
+
+- Not limited to a unique perspective on the DGP
+- Likelihood provides one and only one winner
+- Probably better suited for ecology and observational studies - nature is complex
+- 'Frequentist' really talk about experiments..
+- Both are useful!!
+
+## Estimating parameters
+
+
+
+
+
+
+
+
+
+
