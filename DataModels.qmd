@@ -1,0 +1,682 @@
+---
+title: "About data and models"
+subtitle: "Day 1"
+author: "Manuele Bazzichetto"
+format: 
+  revealjs:
+    slide-number: true
+editor: visual
+appearance:
+  code-block-background: true
+---
+
+```{r}
+library(ggplot2)
+library(ggpubr)
+library(palmerpenguins)
+```
+
+```{css echo=FALSE, eval=FALSE}
+#v-center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90%;
+}
+```
+
+## Premises
+
+-   I am **not** a statistician! He was:
+
+![](Images/Fischer_smoking.gif){width="120" fig-pos="b"}
+
+-   Intuition on stats concepts, abstractions and techniques used on a daily basis
+-   Quick questions if you are completely lost!\
+    Big questions 👉 **Thursday**
+
+## Tell us about you
+
+![](Images/Gandalf.jpeg){width="200" fig-align="center"}
+
+## This story begins with..data
+
+<br>
+
+<br>
+
+::: {style="font-size: 200%;color: red;text-align: center;"}
+**Data** $\approx$ **Information**
+:::
+
+<br>
+
+<br>
+
+::: {style="font-size: 120%; text-align: center;"}
+Usually represented in the form of [*continuous, discrete or qualitative*]{style="color: red"} measures taken on natural or experimental phenomena
+:::
+
+## An example..
+
+::: columns
+::: {.column width="45%"}
+<br>
+
+::: {style="font-size: 60%;"}
+```{r}
+set.seed(30)
+Df <- data.frame(PA = rbinom(30, 1, .5), Elevation = round(rnorm(30, mean = 300, sd = 10), 2), PlantRichness = rpois(30, 5), Habitat = sample(c("Grassland", "Forest", "Mixed"), 30, replace = T))
+
+knitr::kable(Df[1:10, ])
+```
+:::
+:::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="50%" layout="[[1], [1]]"}
+```{r}
+ggplot(Df, aes(x = PlantRichness)) +
+  geom_bar() + 
+  scale_x_continuous(breaks = seq(min(Df$PlantRichness), max(Df$PlantRichness), 1)) +
+  ggtitle("Discrete") +
+  xlab("Plant species richness") + ylab(NULL) +
+  theme_pubclean() +
+  theme(title = element_text(size = 24), axis.title.x = element_text(size = 22),
+        axis.text.x.bottom = element_text(size = 22))
+
+ggplot(Df, aes(x = Elevation)) +
+  geom_density(fill = "lightgrey") + 
+  ggtitle("Continuous") +
+  xlab("Elevation m a.s.l.") + ylab(NULL) +
+  theme_pubclean() +
+  theme(title = element_text(size = 24), axis.title.x = element_text(size = 22),
+        axis.text.x.bottom = element_text(size = 22))
+```
+:::
+:::
+
+## Data *vs.* reality
+
+::: {style="text-align: center;"}
+Data are just a incomplete part of the story
+:::
+
+![](Images/PlatoCave.jpeg){width="200" fig-pos="b"}
+
+::: {style="text-align: center;"}
+Usually, we want to know the full **'truth'** (and not a part of it)
+:::
+
+## Think bigger..use a model
+
+<br>
+
+A [**MODEL**]{style="color: red;font-size: 150%"} is:
+
+-   Simplification/approximation of reality
+-   Set of assumptions describing the data-generating-process
+-   A tool for making inference (drawing conclusions) about the World
+
+## (Ecological) Models..you never know which one to pick up {style="font-size: 65%;"}
+
+![From Ecological models and data in R - Bolker](Images/Models.png){width="100" fig-pos="b"}
+
+##  {.center}
+
+::: {style="font-size: 200%;"}
+*All models are wrong, but some are useful*
+:::
+
+::: {style="font-size: 120%;text-align: right;"}
+(cit. [Box](https://en.wikipedia.org/wiki/All_models_are_wrong))
+:::
+
+## Our model(s) for today
+
+<br>
+
+::: {style="font-size: 100%;color: red;"}
+Focus: parametric models
+:::
+
+<br>
+
+Ecologists use them for:
+
+-   Estimation of parameters
+-   Hypothesis testing
+-   Regression models
+-   Occupancy and species distribution models
+-   Structural equation modelling
+
+## Example: let's go back to the data
+
+We are studying the body size of [Gentoo](https://en.wikipedia.org/wiki/Gentoo_penguin) penguins in the Antarctica[^1]
+
+[^1]: Data from [palmerpenguins R package](https://allisonhorst.github.io/palmerpenguins/)
+
+![](Images/Gentoo.jpeg){width="550" height="350"}
+
+## 
+
+We collect a bunch of data (a **sample**), which look like this 👇
+
+::: columns
+::: {.column width="30%"}
+::: {style="font-size: 80%;"}
+```{r}
+data("penguins")
+
+penguins <- as.data.frame(penguins)
+
+PinguMeanBodyMass <- mean(penguins$body_mass_g[penguins$species == "Gentoo"], na.rm = T)
+
+PinguSdBodyMass <- sd(penguins$body_mass_g[penguins$species == "Gentoo"], na.rm = T)
+
+set.seed(10)
+PinguBodySize <- rnorm(500, mean = PinguMeanBodyMass, sd = PinguSdBodyMass) 
+
+PinguBodySize <- data.frame(ID = seq_along(PinguBodySize), BodySize = PinguBodySize)
+
+PinguBodySize$BodySizeDens <- with(PinguBodySize, dnorm(BodySize, mean = PinguMeanBodyMass, sd = PinguSdBodyMass))
+
+knitr::kable(PinguBodySize[1:8, c(1, 2)])
+```
+:::
+:::
+
+::: {.column width="70%"}
+::: r-stack
+::: {.fragment .fade-out}
+```{r}
+ggplot(PinguBodySize, aes(x = BodySize)) +
+  geom_histogram(fill = "orange", aes(y = ..density..)) + 
+  ggtitle("Gentoo body mass") +
+  ylab(NULL) + xlab(NULL) +
+  theme_pubclean() +
+  theme(title = element_text(size = 24), axis.title.x = element_text(size = 22),
+        axis.text.x.bottom = element_text(size = 22))
+```
+:::
+
+::: {.fragment .fade-in}
+```{r}
+ggplot(PinguBodySize, aes(x = BodySize)) +
+  geom_histogram(fill = "orange", aes(y = ..density..)) +  
+  geom_line(data = PinguBodySize, aes(x = BodySize, y = BodySizeDens), col = "black", lwd = 2) +
+  ggtitle("Gentoo body mass") +
+  ylab(NULL) + xlab(NULL) +
+  theme_pubclean() +
+  theme(title = element_text(size = 24), axis.title.x = element_text(size = 22),
+        axis.text.x.bottom = element_text(size = 22))
+```
+:::
+:::
+
+::: {style="font-size: 70%"}
+**Assumption**: Body mass of (all existing) Gentoo's penguins is normally distributed with some mean and variance
+:::
+
+::: {style="font-size: 70%"}
+\
+**Parametric model**: $Gentoo\hspace{1 mm}body\hspace{1 mm}size \sim \mathcal{N}(\mu,\, \sigma^{2})$
+:::
+:::
+:::
+
+## 
+
+::: columns
+::: column
+What I think I am doing
+
+<br>
+
+```{r}
+ggplot(penguins, aes(x = body_mass_g, y = flipper_length_mm)) +
+  geom_point(alpha = .5, col = "black", fill = "lightgrey") +
+  geom_smooth(method = "lm", formula = y ~ x, se = F) +
+  xlab("Flipper length") + ylab("Body size") +
+  theme_pubclean() +
+  theme(title = element_text(size = 24), axis.title = element_text(size = 22),
+        axis.text = element_text(size = 22))
+```
+
+**Model**:
+
+::: {style="font-size: 90%"}
+$\mu_i = \alpha + \beta \cdot flipper\hspace{1mm}length_i$
+:::
+:::
+
+::: column
+What I am actually doing
+
+::: {style="font-size: 60%;"}
+![From [Applied regression analysis and generalized linear models](https://socialsciences.mcmaster.ca/jfox/Books/Applied-Regression-3E/bayes.html) - Fox](Images/AssumptionsRegression){width="700"}
+:::
+
+**Model**:
+
+::: {style="font-size: 70%;"}
+$Gentoo\hspace{1 mm}body\hspace{1 mm}size_i \sim \mathcal{N}(\mu_i,\, \sigma^{2})$
+
+$\mu_i = \alpha + \beta \cdot flipper\hspace{1mm}length_i$
+:::
+:::
+:::
+
+## So what we need data for?
+
+<br>
+
+<br>
+
+::: {style="font-size: 200%;color: red;text-align: center;"}
+**Data** $\approx$ **Information**
+:::
+
+<br>
+
+<br>
+
+::: {style="font-size: 120%; text-align: center;"}
+We need data to estimate parameters
+:::
+
+## Few things to keep in mind
+
+\
+
+- Population: think about it as all elements of our study target (all existing Gentoo's penguin)
+- Sample: a subset of the population obtained through sampling (a bunch of data)
+-   Assumptions [**pertain to the population**]{.underline}, not to the sample
+-   [**Inference is made on population parameters**]{.underline}, not on sample statistics (e.g., sample mean)
+
+# Bestiary of distributions [For continuous measures - aka pdf]{style="font-size: 50%"}
+
+```{r}
+Uniform_dens <- dunif(seq(from = 0, to = 4, by = .01), min = 1, max = 3)
+Gaussian_dens <- dnorm(seq(from = 3 - 3*2, to = 3 + 3*2, by = .1), mean = 3, sd = 2)
+Znorm_dens <- dnorm(seq(from = - 3, to = 3, by = .1), mean = 0, sd = 1)
+Beta_dens1 <- dbeta(seq(from = 0, to = 1, by = .001), shape1 = 0.5, shape2 = 0.5)
+Beta_dens2 <- dbeta(seq(from = 0, to = 1, by = .001), shape1 = 2, shape2 = 2)
+Tdistr_3_dens <- dt(seq(from = - 4, to = 4, by = .1), df = 3)
+Tdistr_30_dens <- dt(seq(from = - 4, to = 4, by = .1), df = 30)
+Chi_sq1_dens <- dchisq(seq(from = 0, to = 8, by = .05), df = 1)
+Chi_sq4_dens <- dchisq(seq(from = 0, to = 8, by = .05), df = 4)
+```
+
+## Uniform
+
+::: columns
+::: {.column width="60%"}
+```{r}
+ggplot(data = data.frame(y = Uniform_dens, x = seq(from = 0, to = 4, by = .01)),
+       aes(y = y, x = x)) +
+  geom_line(lwd = 1.2) +
+  ylab("Density") + xlab(NULL) +
+  scale_x_continuous(breaks = seq(from = 0, to = 4, by = 1)) +
+  xlim(c(0, 4)) +
+  theme_pubclean() +
+  theme(text = element_text(size = 20))
+```
+
+::: {style="font-size: 60%"}
+$X \sim \mathcal{U}(a,\,b)\\,with\hspace{2mm}a = 1\hspace{2mm}and\hspace{2mm} b\hspace{1mm}=\hspace{1mm}3$
+:::
+
+:::
+
+::: {.column width="40%"}
+
+::: {style="font-size: 60%;"}
+Pdf: $f(x) = \begin{cases}\frac{1}{b-a} & \text{for } a \le x \le b, \\[8pt]0 & \text{for } x < a \ \text{ or } \ x > b.\end{cases}$
+:::
+
+\
+
+::: {style="font-size: 70%;"}
+-   Measures have all same density
+-   Used a lot as a prior for bounded parameters
+-   It has a discrete analog
+:::
+:::
+
+:::
+
+## Gaussian (or normal)
+
+::: columns
+::: {.column width="60%"}
+```{r}
+Scatter_line <- data.frame(y = c(0.15, 0.15), x = c(1.5, 4.5))
+
+ggplot(data = data.frame(y = Gaussian_dens, x = seq(from = 3 - 3*2, to = 3 + 3*2, by = .1)),
+       aes(y = y, x = x)) +
+  geom_line(lwd = 1.2) +
+  geom_line(data = Scatter_line, aes(y = y, x = x), col = "green", lwd = 1.2) +
+  geom_vline(xintercept = 3, col = "red", lwd = 1.2) +
+  annotate(geom = "text", x = 2.5, y = .1, label = "\u03BC = 3", size = 10, angle = 90) +
+  annotate(geom = "text", x = 5.4, y = .16, label = "\u03C3 = 2", size = 10) +
+  ylab("Density") + xlab(NULL) +
+  scale_x_continuous(breaks = seq(from = 3 - 3*2, to = 3 + 3*2, by = 1)) +
+  theme_pubclean() +
+  theme(text = element_text(size = 20))
+```
+
+::: {style="font-size: 60%"}
+$X \sim \mathcal{N}(\mu,\,\sigma^{2})\\,with\hspace{2mm}\mu = 3\hspace{2mm}and\hspace{2mm} \sigma\hspace{1mm}=\hspace{1mm}2$
+:::
+
+:::
+
+::: {.column width="40%"}
+Pdf: $f(x) = \frac{1}{\sigma \sqrt{2\pi} } e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}$
+
+\
+
+::: {style="font-size: 70%;"}
+-   Symmetric
+-   Proportion of observations falling within ${\displaystyle \pm }\hspace{1mm}X\cdot\sigma$ from the mean does not change
+-   Naturally arises under several conditions (sums and other transformations of random variables)
+:::
+:::
+
+:::
+
+## Standard normal
+
+::: columns
+::: {.column width="60%"}
+```{r}
+ggplot(data = data.frame(y = Znorm_dens, x = seq(from = - 3, to = 3, by = .1)),
+       aes(y = y, x = x)) +
+  geom_line(lwd = 1.2) +
+  geom_vline(xintercept = 0, col = "red", lwd = 1.2) +
+  ylab("Density") + xlab(NULL) +
+  scale_x_continuous(breaks = seq(from = -3, to = 3, by = 1)) +
+  theme_pubclean() +
+  theme(text = element_text(size = 20))
+```
+
+::: {style="font-size: 60%"}
+$Z \sim \mathcal{N}(0,\,1)$
+
+$Z = \frac{X - \mu}{\sigma}\\,with\hspace{1mm}X\sim\mathcal{N}(\mu, \sigma^2)$
+::: 
+
+:::
+
+::: {.column width="40%"}
+Pdf: $f(z) = \frac{e^{-z^2/2}}{\sqrt{2\pi}}$
+
+\
+
+::: {style="font-size: 70%;"}
+-   'Scale' Gaussian to have 0 mean and unit variance
+-   Re-express Gaussian in terms of population sd from the mean (Z-score)
+-   Sum of $Z^2$ is $\chi^2$ distributed
+:::
+:::
+:::
+
+## Beta
+
+::: columns
+::: {.column width="60%"}
+```{r}
+ggplot(data = data.frame(y = Beta_dens1, x = seq(from = 0, to = 1, by = .001)),
+       aes(y = y, x = x)) +
+  geom_line(lwd = 1.2, col = "red") +
+  geom_line(data = data.frame(y = Beta_dens2, x = seq(from = 0, to = 1, by = .001)), 
+            lwd = 1.2, col = "blue") +
+  ylab("Density") + xlab(NULL) +
+  scale_x_continuous(breaks = seq(from = 0, to = 1, by = .1)) +
+  ylim(c(0, 2.5)) +
+  theme_pubclean() +
+  theme(text = element_text(size = 20))
+```
+
+::: {style="font-size: 60%"}
+$X \sim \mathcal{U}(a,\,b)\\,with\hspace{2mm}a = 1\hspace{2mm}and\hspace{2mm} b\hspace{1mm}=\hspace{1mm}3$
+:::
+
+:::
+
+::: {.column width="40%"}
+
+::: {style="font-size: 100%;"}
+Pdf: Let it be..
+:::
+
+\
+
+::: {style="font-size: 70%;"}
+-   Used a lot as a prior for parameters bounded between 0 and 1
+:::
+:::
+
+:::
+
+## Other common pdf(s)
+
+- t-Student (check suppl. mat.)
+- $\chi^2$ distribution (check suppl. mat.)
+-   F-distribution
+-   Gamma (only for $X \geq 0$)
+-   Exponential
+
+# Bestiary of distributions [For discrete measures - aka pmf]{style="font-size: 50%"}
+
+```{r}
+Bernoulli_mass <- dbinom(c(0, 1), size = 1, prob = .7)
+Binomial_mass <- dbinom(seq(from = 0, to = 10), size = 10, prob = .7)
+Poisson_mass <- dpois(seq(from = 0, to = 30), lambda = 5)
+```
+
+## Bernoulli
+
+::: columns
+::: {.column width="60%"}
+```{r}
+ggplot(data = data.frame(Proba = Bernoulli_mass, Outcome = as.factor(c(0, 1))),
+       aes(x = Outcome, y = Proba)) +
+  geom_col() +
+  ylab("Probability") + xlab(NULL) +
+  ylim(c(0, .9)) +
+  theme_pubclean() +
+  theme(text = element_text(size = 20))
+```
+
+::: {style="font-size: 60%"}
+$Y \sim Bern(p)\\,with\hspace{1mm} Y\hspace{1mm} assuming\hspace{1mm}value\hspace{1mm} 0\hspace{1mm} or\hspace{1mm} 1$
+:::
+
+:::
+
+::: {.column width="40%"}
+
+::: {style="font-size: 80%"}
+Pmf: $Pr(Y) = p^Y(1-p)^{(1-Y)}$
+:::
+
+\
+
+::: {style="font-size: 70%;"}
+-   Limiting case of a Binomial distribution for a single trial
+-   $Pr(Y=1)$ is $p$ (prob. $Y$ assuming value 1 is $p$)
+-   Assumed distribution for presence/absence data
+:::
+:::
+:::
+
+## Binomial
+
+::: columns
+::: {.column width="60%"}
+```{r}
+ggplot(data = data.frame(Proba = Binomial_mass, Outcome = as.factor(seq(from = 0, to = 10))),
+       aes(x = Outcome, y = Proba)) +
+  geom_col() +
+  ylab("Probability") + xlab(NULL) +
+  theme_pubclean() +
+  theme(text = element_text(size = 20))
+```
+
+::: {style="font-size: 60%;"}
+$Y \sim Binomial(p, N)\\,with\hspace{1mm} Y\hspace{1mm} assuming \hspace{1mm}value\hspace{1mm} from \hspace{1mm}0\hspace{1mm} to \hspace{1mm} or\hspace{1mm} N$
+:::
+
+:::
+
+::: {.column width="40%"}
+
+::: {style="font-size: 80%;"}
+Pmf: $Pr(Y) = \binom{N}{Y} p^Y(1-p)^{(N-Y)}$
+:::
+
+\
+
+::: {style="font-size: 70%;"}
+- Arises from combining the probability of independent events
+- Used to model counts with a known upper bound
+- Converges to Gaussian when N gets large
+:::
+:::
+:::
+
+## Poisson
+
+::: columns
+::: {.column width="60%"}
+```{r}
+ggplot(data = data.frame(Proba = Poisson_mass[1:19], Outcome = as.factor(seq(from = 0, to = 18))),
+       aes(x = Outcome, y = Proba)) +
+  geom_col() +
+  ylab("Probability") + xlab(NULL) +
+  theme_pubclean() +
+  theme(text = element_text(size = 20))
+```
+
+::: {style="font-size: 60%;"}
+$Y \sim Pois(\lambda)\\,with\hspace{1mm} Y\hspace{1mm} assuming \hspace{1mm}value\hspace{1mm} \geq 0$
+:::
+
+:::
+
+::: {.column width="40%"}
+
+::: {style="font-size: 80%;"}
+Pmf: $Pr(Y) = \frac{\lambda^Y\exp^{-\lambda}}{Y!}$
+:::
+
+\
+
+::: {style="font-size: 70%;"}
+- $Mean = variance$
+- Limiting case of binomial with $N$ large and $p$ small
+- Used to model counts with not known upper bound
+- Converges to Gaussian as $\lambda$ gets large
+:::
+:::
+:::
+
+
+## Other common pmf(s)
+
+-   Negative binomial 
+-   Geometric
+-   Multinomial (a binomial for more than 2 outcomes)
+- Discrete uniform
+
+## Supplementary material
+
+# Other continuous pdf(s)
+
+## t-Student
+
+::: columns
+::: {.column width="60%"}
+```{r}
+ggplot(data = data.frame(y = Tdistr_3_dens, x = seq(from = - 4, to = 4, by = .1)),
+       aes(y = y, x = x)) +
+  geom_line(lwd = 1.2, col = "black") +
+  geom_line(data = data.frame(y = Tdistr_30_dens, x = seq(from = - 4, to = 4, by = .1)),
+            lwd = 1.2, col = "green") +
+  geom_vline(xintercept = 0, col = "red", lwd = 1.2) +
+  annotate(geom = "text", x = 2, y = 0.35, label = "n = 3", col = "black", size = 8) +
+  annotate(geom = "text", x = 2, y = 0.25, label = "n = 30", col = "green", size = 8) +
+  ylab("Density") + xlab(NULL) +
+  scale_x_continuous(breaks = seq(from = -4, to = 4, by = 1)) +
+  theme_pubclean() +
+  theme(text = element_text(size = 20))
+```
+
+::: {style="font-size: 60%;"}
+$T \sim \mathcal{t}(0,\,\frac{n}{n-2})\\,undefined\hspace{1mm}if\hspace{1mm}n<2$
+
+<br>
+
+$T = \frac{X - \mu}{\hat{\sigma}}\\,with\hspace{1mm}X\sim\mathcal{N}(\mu, \sigma^2)$
+:::
+
+:::
+
+::: {.column width="40%"}
+Pdf:
+
+![](Images/Gosset_in_Guinness.jpg){width="180"}
+
+::: {style="font-size: 60%;"}
+-   Assumed distribution for the t-statistics
+-   Re-express Gaussian in terms of sample sd from the mean
+-   Tightly linked to F-distribution
+-   Flat tails when we have few data to estimate sd
+:::
+:::
+:::
+
+## Chi-squared
+
+::: columns
+::: {.column width="60%"}
+```{r}
+ggplot(data = data.frame(y = Chi_sq1_dens, x = seq(from = 0, to = 8, by = .05)),
+       aes(y = y, x = x)) +
+  geom_line(lwd = 1.2, col = "black") +
+  geom_line(data = data.frame(y = Chi_sq4_dens, x = seq(from = 0, to = 8, by = .05)),
+            lwd = 1.2, col = "green") +
+  annotate(geom = "text", x = 4, y = 1, label = "n = 1", col = "black", size = 8) +
+  annotate(geom = "text", x = 4, y = 0.5, label = "n = 4", col = "green", size = 8) +
+  ylab("Density") + xlab(NULL) +
+  scale_x_continuous(breaks = seq(from = 0, to = 8, by = 1)) +
+  theme_pubclean() +
+  theme(text = element_text(size = 20))
+```
+
+::: {style="font-size: 60%;"}
+$Q = \sum{Z^2}$
+
+<br>
+
+$Q \sim\chi^2$
+:::
+:::
+
+::: {.column width="40%"}
+Pdf: 🙅‍♀️
+
+::: {style="font-size: 80%;"}
+-   Assumed distribution for the Chi-squared statistics
+-   Mean is $n$, variance is $2\cdot{n}$
+-   F-distribution is $\frac{\frac{\chi^2}{n_1}}{\frac{\chi^2}{n_2}}$
+:::
+:::
+:::
+
+
+
