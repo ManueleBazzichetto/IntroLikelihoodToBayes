@@ -179,13 +179,13 @@ PinguMeanBodyMass <- mean(penguins$body_mass_g[penguins$species == "Gentoo"], na
 PinguSdBodyMass <- sd(penguins$body_mass_g[penguins$species == "Gentoo"], na.rm = T)
 
 set.seed(10)
-PinguBodySize <- rnorm(500, mean = PinguMeanBodyMass, sd = PinguSdBodyMass) 
+PinguBodyMass <- rnorm(500, mean = PinguMeanBodyMass, sd = PinguSdBodyMass) 
 
-PinguBodySize <- data.frame(ID = seq_along(PinguBodySize), BodySize = PinguBodySize)
+PinguBodyMass <- data.frame(ID = seq_along(PinguBodyMass), BodyMass = PinguBodyMass)
 
-PinguBodySize$BodySizeDens <- with(PinguBodySize, dnorm(BodySize, mean = PinguMeanBodyMass, sd = PinguSdBodyMass))
+PinguBodyMass$BodyMassDens <- with(PinguBodyMass, dnorm(BodyMass, mean = PinguMeanBodyMass, sd = PinguSdBodyMass))
 
-knitr::kable(PinguBodySize[1:8, c(1, 2)])
+knitr::kable(PinguBodyMass[1:8, c(1, 2)])
 ```
 :::
 :::
@@ -194,7 +194,7 @@ knitr::kable(PinguBodySize[1:8, c(1, 2)])
 ::: r-stack
 ::: {.fragment .fade-out}
 ```{r}
-ggplot(PinguBodySize, aes(x = BodySize)) +
+ggplot(PinguBodyMass, aes(x = BodyMass)) +
   geom_histogram(fill = "orange", aes(y = ..density..)) + 
   ggtitle("Gentoo body mass") +
   ylab(NULL) + xlab(NULL) +
@@ -206,9 +206,9 @@ ggplot(PinguBodySize, aes(x = BodySize)) +
 
 ::: {.fragment .fade-in}
 ```{r}
-ggplot(PinguBodySize, aes(x = BodySize)) +
+ggplot(PinguBodyMass, aes(x = BodyMass)) +
   geom_histogram(fill = "orange", aes(y = ..density..)) +  
-  geom_line(data = PinguBodySize, aes(x = BodySize, y = BodySizeDens), col = "black", lwd = 2) +
+  geom_line(aes(x = BodyMass, y = BodyMassDens), col = "black", lwd = 2) +
   ggtitle("Gentoo body mass") +
   ylab(NULL) + xlab(NULL) +
   theme_pubclean() +

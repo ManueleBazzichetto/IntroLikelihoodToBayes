@@ -252,7 +252,7 @@ knitr::kable(PinguBodyMass[1:8, c(1, 2)])
 
 ggplot(PinguBodyMass, aes(x = BodyMass)) +
   geom_histogram(fill = "orange", aes(y = ..density..)) +  
-  geom_line(data = PinguBodyMass, aes(x = BodyMass, y = BodyMassDens), col = "black", lwd = 2) +
+  geom_line(aes(x = BodyMass, y = BodyMassDens), col = "black", lwd = 2) +
   ggtitle("Gentoo body mass") +
   ylab(NULL) + xlab(NULL) +
   theme_pubclean() +
