@@ -6,6 +6,7 @@ format:
   revealjs:
     self-contained: true
     slide-number: true
+    enableEmoji: true
 editor: visual
 appearance:
   code-block-background: true

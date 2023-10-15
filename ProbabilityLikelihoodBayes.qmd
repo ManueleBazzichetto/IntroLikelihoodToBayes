@@ -6,6 +6,7 @@ format:
   revealjs:
     self-contained: true
     slide-number: true
+    enableEmoji: true
 editor: visual
 appearance:
   code-block-background: true
@@ -264,7 +265,6 @@ ggplot(PinguBodyMass, aes(x = BodyMass)) +
 :::
 
 ::: {style="font-size: 70%"}
-
 **Parametric model**: $Gentoo\hspace{1 mm}body\hspace{1 mm}size \sim \mathcal{N}(\mu,\, \sigma^{2})$
 :::
 :::
@@ -273,42 +273,39 @@ ggplot(PinguBodyMass, aes(x = BodyMass)) +
 ## Likelihood function
 
 ::: {style="font-size: 65%;text-align: left;"}
-- $Probability(BodyMass = 3000) \rightarrow Pr(BM_i = value_i)$
-::: 
-
-::: {.fragment .fade-in style="font-size: 65%;text-align: left;"}
-- $Pr(BM_1 = value_1) \times Pr(BM_2 = value_2) \hspace{1 mm} \times \hspace{1 mm} ... \hspace{1 mm}\times \hspace{1 mm} Pr(BM_n = value_n)$
+-   $Probability(BodyMass = 3000) \rightarrow Pr(BM_i = value_i)$
 :::
 
 ::: {.fragment .fade-in style="font-size: 65%;text-align: left;"}
-- $\prod\limits_{i=1}^{n} Pr(BM_i = value_i)$
+-   $Pr(BM_1 = value_1) \times Pr(BM_2 = value_2) \hspace{1 mm} \times \hspace{1 mm} ... \hspace{1 mm}\times \hspace{1 mm} Pr(BM_n = value_n)$
 :::
 
 ::: {.fragment .fade-in style="font-size: 65%;text-align: left;"}
-- $Likelihood \hspace{1 mm} (L) = \prod\limits_{i=1}^{n} Pr(BM_i = value_i|\mu,\sigma^2), \hspace{1 mm} with \hspace{1 mm} Pr \hspace{1 mm} being \hspace{1 mm} the \hspace{1 mm} Gaussian \hspace{1 mm} pdf$
+-   $\prod\limits_{i=1}^{n} Pr(BM_i = value_i)$
+:::
+
+::: {.fragment .fade-in style="font-size: 65%;text-align: left;"}
+-   $Likelihood \hspace{1 mm} (L) = \prod\limits_{i=1}^{n} Pr(BM_i = value_i|\mu,\sigma^2), \hspace{1 mm} with \hspace{1 mm} Pr \hspace{1 mm} being \hspace{1 mm} the \hspace{1 mm} Gaussian \hspace{1 mm} pdf$
 :::
 
 ::: {.fragment .fade-in style="font-size: 90%;text-align: left;"}
-**Maximizing the joint probability of the data|parameters allows finding the parameter(s) that maximize(s) the L of observing the data (under the assumed model)!**
+**Maximizing the joint probability of the data\|parameters allows finding the parameter(s) that maximize(s) the L of observing the data (under the assumed model)!**
 :::
 
 \
 
-::: {.fragment .fade-in style="font-size: 100%;text-align: center;color: red;"} 
-**Likelihood(parameters|data) = Probability(data|parameters)**
+::: {.fragment .fade-in style="font-size: 100%;text-align: center;color: red;"}
+**Likelihood(parameters\|data) = Probability(data\|parameters)**
 :::
-
 
 ## Maximum likelihood estimation
 
-:::: {.columns}
-
+::: columns
 ::: {.column width="80"}
 Link data, model and L
 
-
 ::: {style="font-size: 60%;"}
-**Data**: sample of $n$ penguins on which we measure BM 
+**Data**: sample of $n$ penguins on which we measure BM
 
 **Model**:
 
@@ -324,36 +321,32 @@ $\prod\limits_{i=1}^{n} \frac{1}{\sigma \sqrt{2\pi} } e^{-\frac{1}{2}\left(\frac
 
 "Move" along combinations of $\mu$ and $\sigma^2$ and find those that maximize L
 :::
-
 :::
 
 ::: {.column width="50%"}
 ![](Images/likel_surf.jpg)
-
 :::
-
-
-::::
+:::
 
 ## Maximum likelihood estimation
 
 We usually maximize the log-Likelihood (LL) for two main reasons:
 
-- Products become sums:
+-   Products become sums:
 
 $log(\prod\limits_{i=1}^{n}X_i) = \sum\limits_{i=1}^{n}log(X_i)$
 
-- Easier to work with exponential functions (like lots of pdfs and pmfs)
+-   Easier to work with exponential functions (like lots of pdfs and pmfs)
 
 ## Examples
 
 We will:
 
-- Estimate the **population** mean of Gentoo's body mass using brute force
+-   Estimate the **population** mean of Gentoo's body mass using brute force
 
-- Estimate regression parameters for the relationship between Gentoo's body mass and flipper length (without using brute force)
+-   Estimate regression parameters for the relationship between Gentoo's body mass and flipper length (without using brute force)
 
-- Estimate rate parameter of a Poisson population
+-   Estimate rate parameter of a Poisson population
 
 ::: {style="font-size: 200%;text-align: center;"}
 NOW GO TO R..
@@ -419,11 +412,9 @@ ggplot(data = data.frame(Proba = Poisson_mass[1:19], Outcome = as.factor(seq(fro
 ::: {style="font-size: 60%;"}
 $Y \sim Pois(\lambda)\\,with\hspace{1mm} Y\hspace{1mm} assuming \hspace{1mm}value\hspace{1mm} \geq 0$
 :::
-
 :::
 
 ::: {.column width="40%"}
-
 ::: {style="font-size: 80%;"}
 Pmf: $Pr(Y) = \frac{\lambda^Y\exp^{-\lambda}}{Y!}$
 :::
@@ -431,22 +422,23 @@ Pmf: $Pr(Y) = \frac{\lambda^Y\exp^{-\lambda}}{Y!}$
 \
 
 ::: {style="font-size: 70%;"}
-- $Mean = variance$
-- Limiting case of binomial with $N$ large and $p$ small
-- Used to model counts with not known upper bound
-- Converges to Gaussian as $\lambda$ gets large
+-   $Mean = variance$
+-   Limiting case of binomial with $N$ large and $p$ small
+-   Used to model counts with not known upper bound
+-   Converges to Gaussian as $\lambda$ gets large
 :::
 :::
 :::
 
 ## Things to keep in mind
 
-- Likelihood function $\neq$ Pdf
+-   Likelihood function $\neq$ Pdf
 
-- We found the MLE(s). Does this mean that we now know the population parameters? NO!
+-   We found the MLE(s). Does this mean that we now know the population parameters? NO!
 
-- From the shape of the LL, we can estimate how precisely we estimate population parameters
+-   MLE(s) have asymptotic properties (sample size matters)
 
+-   From the shape of the LL, we can estimate how precisely we estimate population parameters
 
 # Bayes' rule and bayesian stats
 
@@ -457,63 +449,129 @@ A re-arrangement of conditional probability:
 **Conditional** probability: $Pr(A|B)=\frac{Pr(A \cap B)}{Pr(B)}$
 
 ::: {.incremental style="font-size: 80%;"}
-- $Pr(A|B)=\frac{Pr(A \cap B)}{Pr(B)}$
+-   $Pr(A|B)=\frac{Pr(A \cap B)}{Pr(B)}$
 
-- $Pr(A|B)Pr(B)=Pr(A \cap B)$
+-   $Pr(A|B)Pr(B)=Pr(A \cap B)$
 
-- But $Pr(A \cap B) = Pr(B \cap A)$
+-   But $Pr(A \cap B) = Pr(B \cap A)$
 
-- And $Pr(B \cap A) = Pr(B|A)Pr(A)$
+-   And $Pr(B \cap A) = Pr(B|A)Pr(A)$
 
-- So $Pr(A|B)Pr(B) = Pr(B|A)Pr(A)$
+-   So $Pr(A|B)Pr(B) = Pr(B|A)Pr(A)$
 
-- Dividing both sides by $Pr(B)$ we end up with:
+-   Dividing both sides of the equation by $Pr(B)$, we end up with:
 :::
 
 ::: {.fragment .fade-in}
 **Bayes' rule**: $Pr(A|B) = \frac{Pr(B|A)Pr(A)}{Pr(B)}$
 :::
 
-## But what does it mean??
+## Wait..what does it mean? (Pt. 1)
 
-$Pr$: we are familiar with them (pdf(s), pmf(s))
+$Pr$: we are familiar with it (pdf(s), pmf(s))
 
 \
 
-$Pr(B|A)$: what if I tell you that $B$ is **data** and $A$ parameters?
+::: {style="font-size: 90%;"}
+$Pr(B|A)$: what if I tell you that $B$ is **data** and $A$ model **parameters**?
+:::
+
+\
 
 ::: {.fragment .fade-in}
-
-::: {style="text-align: center;"}
-**WELL DONE! IT'S THE LIKELIHOOD!**
+::: {style="text-align: center;font-size: 150%;color: red;"}
+**YES! Pr(B\|A) IS THE LIKELIHOOD!**
 :::
-
 :::
 
 \
 
-
+::: {.fragment .fade-in}
+$Pr(A)$: prior..a model for the **parameter(s)** 🤯
+:::
 
 \
 
-$Pr(A)$: prior..a model for the parameter(s) 🤯
- 
+::: {.fragment .fade-in}
+$Pr(B)$: marginal probability of the data
+:::
+
+## Wait..what does it mean? (Pt. 2)
+
+::: {style="font-size: 80%;"}
+We gave a name to all ingredients for $Pr(A|B)$, but what's $Pr(A|B)$?
+
+\
+
+Recall our aim is to [estimate model parameters]{.underline}
+
+\
+
+This time we won't restrict ourselves to a **unique idea of the DGP**, while we'll rather consider **different plausible DGPs**
+:::
+
+\
+
+::: {style="font-size: 80%;"}
+The plausibility of each of these scenarios results from combining **what the data suggests** about the model (likelihood params\|data) and **what we assume** (about the model) even before looking at the data (the prior):
+:::
+
+::: {style="text-align: right;font-size: 130%;"}
+$Pr(B|A)\cdot Pr(A)$
+:::
+
+## A closer look at Pr(B)
+
+Normalization constant: makes $Pr(A|B)$ integrate to 1
+
+\
+
+::: {.fragment .fade-in style="font-size: 80%;"}
+$Pr(B)$: marginal probability of the data
+:::
+
+::: {.fragment .fade-in style="font-size: 80%;"}
+$Pr(B) = \sum\limits_{i=1}^{n}Pr(B|A_i)Pr(A_i)$ from LTP[^1]
+:::
+
+::: {.fragment .fade-in style="font-size: 80%;"}
+$\sum\limits_{i=1}^{n}Pr(B|A_i)Pr(A_i) = Pr(B|A_1)Pr(A_1) + ... + Pr(B|A_n)Pr(A_n)$
+:::
+
+\
+
+::: {.fragment .fade-in style="font-size: 90%;"}
+For any $A_i$: $Pr(A_i|B) = \frac{Pr(B|A_i)Pr(A_i)}{Pr(B|A_1)Pr(A_1) + ... + Pr(B|A_n)Pr(A_n)}$
+:::
+
+[^1]: Law of Total Probability
+
 ## Why chosing Bayes
 
-- Not limited to a unique perspective on the DGP
-- Likelihood provides one and only one winner
-- Probably better suited for ecology and observational studies - nature is complex
-- 'Frequentist' really talk about experiments..
-- Both are useful!!
+-   Not to limit us to a unique perspective on the DGP
+
+-   Likelihood provides one and only one winner (the MLE)
+
+-   Probably better suited for ecology & observational studies (?) - nature is complex
+
+-   'Frequentist' approach for experiments?
+
+-   [**Both approaches are useful**]{style="color: red;"}
 
 ## Estimating parameters
 
+- Grid approximation
 
+- Quadratic approximation
 
+- MCMC 😎
 
+## Books!
 
+![](Images%5CLectBiostatsBook.jpeg){.absolute top="200" left="0" width="250" height="350"}
 
+![](Images%5CStatRetBook.jpeg){.absolute top="200" left="350" width="250" height="350"}
 
+![](Images%5CBolkerBook.jpeg){.absolute top="30" right="50" width="250" height="300"}
 
-
-
+![](Images%5CFoxBook.jpeg){.absolute bottom="0" right="50" width="230" height="300"}
