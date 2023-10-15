@@ -6,7 +6,7 @@ The material covers topics that range from data to parametric models for statist
 
 Slides are provided as html and .qmd files. This will allow people to modify, correct, integrate any material presented during the course. 
 
-For most of the R examples (LikelihoodEstimation.R), I used the (amazing) palmerpenguins dataset[^1], made available through the namesake R package.
+For most of the R examples (e.g., LikelihoodEstimation.R), I used the (amazing) palmerpenguins dataset[^1], which is made available through a namesake R package.
 
 For any doubt or inquiry, please contact me at: manuele.bazzichetto@gmail.com
 
