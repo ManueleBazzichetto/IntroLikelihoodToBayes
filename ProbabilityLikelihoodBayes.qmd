@@ -4,6 +4,7 @@ subtitle: "Day 1"
 author: "Manuele Bazzichetto"
 format: 
   revealjs:
+    self-contained: true
     slide-number: true
 editor: visual
 appearance:
