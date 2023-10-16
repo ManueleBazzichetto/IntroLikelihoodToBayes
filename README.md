@@ -1,6 +1,6 @@
 # IntroLikelihoodToBayes
 
-![[Thomas Bayes](https://en.wikipedia.org/wiki/Thomas_Bayes)](https://github.com/ManueleBazzichetto/IntroLikelihoodToBayes/blob/main/Bayes_pic.jpeg)
+![ [Thomas Bayes](https://en.wikipedia.org/wiki/Thomas_Bayes) ](https://github.com/ManueleBazzichetto/IntroLikelihoodToBayes/blob/main/Bayes_pic.jpeg)
 
 This repo includes slides and an R script (in the Examples folder) used on the 1st day of the course "Introduction to Likelihood and Bayes" (by Manuele Bazzichetto and Petr Keil) held at the Department of Spatial Sciences of the Czech University of Life Sciences.
 
