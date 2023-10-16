@@ -4,7 +4,7 @@
 
 This repo includes slides and an R script (in the Examples folder) used on the 1st day of the course "Introduction to Likelihood and Bayes" (by Manuele Bazzichetto and Petr Keil) held at the Department of Spatial Sciences of the Czech University of Life Sciences.
 
-The material covers topics that range from data to parametric models for statistical populations (DataModels presentation), and from basic principles of probability and maximum likelihood estimation to Bayes' rule and Bayesian estimation of model parameters (ProbabilityLikelihoodBayes).
+The material covers topics that range from data to parametric models for statistical populations (DataModels slides), and from basic principles of probability and maximum likelihood estimation to Bayes' rule and Bayesian estimation of model parameters (ProbabilityLikelihoodBayes slides).
 
 Slides are provided as both html and .qmd files, so that people will be able to modify, correct, integrate any material presented during the course. 
 
