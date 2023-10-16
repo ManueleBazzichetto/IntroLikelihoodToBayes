@@ -13,8 +13,8 @@ For most of the R examples (e.g., LikelihoodEstimation.R), I used the (amazing) 
 The "Examples" folder includes 4 practical examples:
 
 - brute force maximum likelihood estimation of the population mean of a Gaussian model;
-- same task as above using the optim() R function (and the "BFGS" method);
-- maximum likelihood estimation of the population rate of a Poisson model;
+- using the optim() R function (and the "BFGS" method) to estimate parameters of a Gaussian regression;
+- using the optim() R function (and the "BFGS" method) to estimate parameters of a Poisson regression;
 - approximation grid bayesian estimation of the population rate of a Poisson model.
 
 For any doubt or inquiry, please contact me at: manuele.bazzichetto@gmail.com
