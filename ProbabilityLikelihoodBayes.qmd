@@ -21,7 +21,7 @@ library(palmerpenguins)
 
 ## Probability
 
-Meaning? Depends on who you ask to..
+Meaning? Depends on who you ask..
 
 ::: {style="font-size: 90%;"}
 **Frequentist**: Essentially, the (long-run) relative frequency (or proportion) of an event happening
@@ -108,7 +108,7 @@ Continuous measures 👉 **density**
 ## [A note on cumulative distribution function(s)]{style="font-size: 80%;"}
 
 ::: {style="font-size: 60%;"}
-Cdf(s) map measures to the probability of them assuming a specific (or lower) value
+Cdf(s) map measures to their probability of assuming a specific (or lower) value
 
 Usually written as: $F = Pr(X \leq x)$
 
@@ -184,7 +184,7 @@ d\*, p\*, q\*, r\*
 
 **p**\*: returns $Pr(measure\leq quantile)$ (mind the tail argument)
 
-**q**\*: returns quantile for a given $Pr(measure\leq quantile)$ (mind the tail argument)
+**q**\*: returns quantile for a given **p**\* (mind the tail argument)
 
 **r**\*: draw random values of measures from a model\
 :::
@@ -207,7 +207,7 @@ Data: information we have available
 
 Model: a set of assumptions to describe a simplified version of reality
 
-Parametric model: Model described by parameters (see pdf(s) and pmf(s))
+Parametric model: Model described by parameters (see pdfs and pmfs)
 
 Probability: how measures behave according to our model
 
@@ -468,7 +468,7 @@ A re-arrangement of conditional probability:
 
 ## Wait..what does it mean? (Pt. 1)
 
-$Pr$: we are familiar with it (pdf(s), pmf(s))
+$Pr$: we are familiar with it (pdfs, pmfs)
 
 \
 
@@ -513,7 +513,7 @@ This time we won't restrict ourselves to a **unique idea of the DGP**, while we'
 \
 
 ::: {style="font-size: 80%;"}
-The plausibility of each of these scenarios results from combining **what the data suggests** about the model (likelihood params\|data) and **what we assume** (about the model) even before looking at the data (the prior):
+The plausibility of each of these scenarios results from combining **what the data suggest** about the model (likelihood params\|data) and **what we assume** (about the model) even before looking at the data (the prior):
 :::
 
 ::: {style="text-align: right;font-size: 130%;"}
@@ -531,7 +531,7 @@ $Pr(B)$: marginal probability of the data
 :::
 
 ::: {.fragment .fade-in style="font-size: 80%;"}
-$Pr(B) = \sum\limits_{i=1}^{n}Pr(B|A_i)Pr(A_i)$ from LTP[^1]
+$Pr(B) = \sum\limits_{i=1}^{n}Pr(B|A_i)Pr(A_i)$ from LTP[^3]
 :::
 
 ::: {.fragment .fade-in style="font-size: 80%;"}
@@ -544,11 +544,34 @@ $\sum\limits_{i=1}^{n}Pr(B|A_i)Pr(A_i) = Pr(B|A_1)Pr(A_1) + ... + Pr(B|A_n)Pr(A_
 For any $A_i$: $Pr(A_i|B) = \frac{Pr(B|A_i)Pr(A_i)}{Pr(B|A_1)Pr(A_1) + ... + Pr(B|A_n)Pr(A_n)}$
 :::
 
-[^1]: Law of Total Probability
+[^3]: Law of Total Probability
 
-## Why chosing Bayes
+## What do we do with Pr(A)
 
--   Not to limit us to a unique perspective on the DGP
+```{r}
+Gaussian_mass <- dnorm(seq(-3, 3, .1))
+Seq_vals <- seq(-3, 3, .1)
+
+Gaussian_df <- data.frame(Gs_mass = Gaussian_mass,  
+                          Seq_vals = Seq_vals)
+
+ggplot(Gaussian_df,
+       aes(x = Seq_vals, y = Gs_mass)) +
+  geom_line(lwd = 1.2) +
+  ggtitle("Posterior distribution") +
+  ylab("Density") +
+  xlab("Hypothetical value of a parameter") +
+  theme_pubr() +
+  theme(title = element_text(size = 18))
+```
+
+::: {style="font-size: 90%;"}
+Look at the MAP and intervals (we have a full distribution to explore!)
+:::
+
+## Why choosing Bayes
+
+-   Not to limit ourselves to a unique perspective on the DGP
 
 -   Likelihood provides one and only one winner (the MLE)
 
@@ -556,7 +579,7 @@ For any $A_i$: $Pr(A_i|B) = \frac{Pr(B|A_i)Pr(A_i)}{Pr(B|A_1)Pr(A_1) + ... + Pr(
 
 -   'Frequentist' approach for experiments?
 
--   [**Both approaches are useful**]{style="color: red;"}
+-   [**Both freq. and bayesian approaches are useful**]{style="color: red;"}
 
 ## Estimating parameters
 
@@ -565,6 +588,61 @@ For any $A_i$: $Pr(A_i|B) = \frac{Pr(B|A_i)Pr(A_i)}{Pr(B|A_1)Pr(A_1) + ... + Pr(
 - Quadratic approximation
 
 - MCMC 😎
+
+## Grid approximation
+
+- Same as brute force maximum likelihood estimation
+
+- This time, we compute the posterior at each candidate value(s) for the parameter
+
+- Importance of grid resolution!
+
+::: {style="font-size: 200%;text-align: center;"}
+NOW GO TO R..
+:::
+
+## Quadratic approximation
+
+::: {style="font-size: 80%;"}
+Assumption: the posterior is [Gaussian]{.underline} (near the peak)!
+
+$log$ of a Gaussian is a perfect parabola
+:::
+
+```{r}
+#| fig-pos: "b"
+Gaussian_mass_log <- dnorm(Seq_vals, log = TRUE)
+
+Gaussian_df$Gs_mass_log <- Gaussian_mass_log
+
+Gs_plot <- ggplot(Gaussian_df, aes(x = Seq_vals, y = Gs_mass)) +
+  geom_line(lwd = 1.2) +
+  ggtitle("Gaussian") +
+  theme_void() +
+  theme(title = element_text(size = 20))
+
+Gs_log_plot <- ggplot(Gaussian_df, aes(x = Seq_vals, y = Gs_mass_log)) +
+  geom_line(lwd = 1.2) +
+  ggtitle("log Gaussian") +
+  theme_void() +
+  theme(title = element_text(size = 20))
+
+Gs_plot | Gs_log_plot
+```
+
+::: {style="font-size: 80%;text-align: center;"}
+1^st^ derivative of the parabola 👉 gives us its peak
+
+2^nd^ derivative of the parabola 👉 gives us its curvature
+::: 
+
+## MCMC
+
+- Non-parametric means of sampling (and describing the shape of) the posterior
+
+- Several algorithms exist (M-H, GibbsSampler, Hamiltonian)
+
+- Let's have a look at what they do [here](https://chi-feng.github.io/mcmc-demo/app.html)
 
 ## Books!
 
