@@ -1,6 +1,6 @@
 # IntroLikelihoodToBayes
 
-![](https://github.com/ManueleBazzichetto/IntroLikelihoodToBayes/commit/51063bdb11429eac027361165bf15692992070f8)
+![]()
 
 This repo includes slides and an R script (in the Examples folder) used on the 1st day of the course "Introduction to Likelihood and Bayes" (by Manuele Bazzichetto and Petr Keil) held at the Department of Spatial Sciences of the Czech University of Life Sciences.
 
