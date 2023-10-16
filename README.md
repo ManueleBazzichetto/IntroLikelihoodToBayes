@@ -8,6 +8,13 @@ Slides are provided as both html and .qmd files, so that people will be able to 
 
 For most of the R examples (e.g., LikelihoodEstimation.R), I used the (amazing) palmerpenguins dataset[^1], which is made available through a namesake R package.
 
+The "Examples" folder includes 4 practical examples:
+
+- brute force maximum likelihood estimation of the population mean of a Gaussian model;
+- same task as above using the optim() R function (and the "BFGS" method);
+- maximum likelihood estimation of the population rate of a Poisson model;
+- approximation grid bayesian estimation of the population rate of a Poisson model.
+
 For any doubt or inquiry, please contact me at: manuele.bazzichetto@gmail.com
 
 [^1]: Horst AM, Hill AP, Gorman KB (2020). palmerpenguins: Palmer Archipelago (Antarctica) penguin data. R package version 0.1.0. https://allisonhorst.github.io/palmerpenguins/. doi: 10.5281/zenodo.3960218.
