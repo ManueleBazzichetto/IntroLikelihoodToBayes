@@ -1,0 +1,32 @@
+
+    model
+    {
+    # PRIORS ----------------------------------
+    
+      alpha.occ ~ dnorm(0, 0.01)
+      beta.occ ~ dnorm(0, 0.01)
+      alpha.det ~ dnorm(0, 0.01)
+      beta.det ~ dnorm(0, 0.01)
+      
+    # LIKELIHOOD ------------------------------
+    
+    for(i in 1:N.sites)
+    {
+      # TRUE OCCUPANCY at site i:
+      logit(psi[i]) <- alpha.occ + beta.occ*humidity[i] 
+      z[i] ~ dbern(psi[i]) 
+      
+      # DETECTION PROBABILITY:
+      logit(p[i]) <- alpha.det + beta.det*humidity[i] 
+
+      # effective probability of observing the present individual
+      eff.p[i] <- z[i] * p[i] 
+      
+      for(j in 1:N.visit)
+      {           
+         # the observed data -- detection/non-detection at [i,j]
+         y[i,j] ~ dbern(eff.p[i]) 
+      }  
+    }
+    }
+  

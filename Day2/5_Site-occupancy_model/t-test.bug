@@ -1,0 +1,27 @@
+
+    
+model
+{
+  # priors
+  mu.f ~ dnorm(0, 0.001) # note the low *PRECISION*
+  mu.m ~ dnorm(0, 0.001)
+  sigma ~ dunif(0, 100)
+  tau <- 1/(sigma*sigma)
+  
+  # likelihood - females
+  for(i in 1:N.f)
+  {
+    y.f[i] ~ dnorm(mu.f, tau)  
+  }
+  
+  # likelihood - males
+  for(j in 1:N.m)
+  {
+    y.m[j] ~ dnorm(mu.m, tau)  
+  }
+  
+  # derived quantity
+  delta <- mu.f - mu.m
+  
+}
+
