@@ -17,7 +17,21 @@ October 2023
 
 ![](Thomas_Bayes.png)
 
+## Install and load JAGS
 
+**JAGS:**
+
+- Ubuntu: ```sudo apt install jags```
+- Windows: download the installer from SourceForge
+- MacOS: ?
+
+Install the main R interface: ```install.packages("R2jags")```
+
+Load the library:
+
+```{r, message = FALSE, warning = FALSE}
+library(R2jags)
+```
 
 ## JAGS - preparing the data
 
@@ -131,29 +145,46 @@ model
 ## JAGS - model specification
 
 ```{r, tidy=FALSE, message = FALSE, warning=FALSE}
-library(R2jags)
-
 fitted.model <- jags(data=my.data,  
                      model.file="my_model.txt", 
                      parameters.to.save="lambda", 
                      n.chains=3, n.iter=2000, n.burnin=1000)
 ```
 
-## JAGS - model specification
+## JAGS - exploring the model
 
 ```{r}
   plot(as.mcmc(fitted.model))
 ```
 
-## JAGS - model specification
+## JAGS - exploring the model
 
 ```{r}
   fitted.model
 ```
 
-## JAGS - model specification
+## JAGS - exploring the model
 
 ```{r}
   plot(as.mcmc(fitted.model))
 ```
+
+## JAGS - exploring the model with ```ggplot```
+
+```{r, message = FALSE, warning = FALSE}
+  library(ggmcmc)
+```
+
+## JAGS - exploring the model with ```ggplot```
+
+```{r}
+  ggs_density(ggs(as.mcmc(fitted.model)))
+```
+
+## JAGS - exploring the model with ```ggplot```
+
+```{r}
+  ggs_caterpillar(ggs(as.mcmc(fitted.model)))
+```
+
 
