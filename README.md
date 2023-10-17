@@ -4,9 +4,9 @@
 
 [Thomas Bayes](https://en.wikipedia.org/wiki/Thomas_Bayes)
 
-This repo includes slides and an R script (in the Examples and Day2 folder) used for the 2-day course on "Introduction to Likelihood and Bayes" (by Manuele Bazzichetto and Petr Keil) held at the Department of Spatial Sciences of the Czech University of Life Sciences.
+This repo includes slides and R scripts (in the Examples and Day2 folder) used for the 2-day course on "Introduction to Likelihood and Bayes" (by Manuele Bazzichetto and Petr Keil) held at the Department of Spatial Sciences of the Czech University of Life Sciences.
 
-Day1: The material covers topics that range from data to parametric models for statistical populations (DataModels slides), and from basic principles of probability and maximum likelihood estimation to Bayes' rule and Bayesian estimation of model parameters (ProbabilityLikelihoodBayes slides). Slides are provided as both html and .qmd files, so that people will be able to modify, correct, integrate any material presented during the course. 
+Day1: The material for Day1 covers topics that range from data to parametric models for statistical populations (DataModels slides), and from basic principles of probability and maximum likelihood estimation to Bayes' rule and Bayesian estimation of model parameters (ProbabilityLikelihoodBayes slides). Slides are provided as both html and .qmd files, so that people will be able to modify, correct, integrate any material presented during the course. 
 
 For most of the Day1 R examples (e.g., LikelihoodEstimation.R), we used the (amazing) palmerpenguins dataset[^1], which is made available through a namesake R package.
 
