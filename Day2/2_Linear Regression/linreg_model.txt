@@ -1,0 +1,19 @@
+
+model
+{
+  # priors
+  sigma ~ dunif(0, 100)
+  tau <- 1/(sigma*sigma)
+  a ~ dnorm(0, 0.001)
+  b ~ dnorm(0, 0.001)
+  
+  # likelihood
+  for(i in 1:N)
+  {
+    growth[i] ~ dnorm(mu[i], tau)
+    mu[i] <- a + b[group[i]]
+  
+  }
+  
+
+}

@@ -1,0 +1,25 @@
+
+
+model
+{
+    # priors
+    grand.mean ~ dnorm(0, 0.001)
+    grand.sigma ~ dunif(0,100)
+    grand.tau <- 1/(grand.sigma*grand.sigma)
+  
+    sigma ~ dunif(0,100)
+    tau <- 1/(sigma*sigma)
+  
+    for(j in 1:N.pop)
+    {
+      alpha[j] ~ dnorm(grand.mean, grand.tau)
+    }
+    
+    # likelihood
+    for(i in 1:N)
+    {
+      y[i] ~ dnorm(alpha[x[i]], tau)
+    }
+ 
+}    
+    

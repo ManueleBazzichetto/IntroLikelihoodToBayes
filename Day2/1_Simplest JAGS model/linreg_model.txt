@@ -1,0 +1,17 @@
+
+model
+{
+  # likelihood
+  for(i in 1:N)
+  {
+    growth[i] ~ dnorm(mu[i], tau)
+    mu[i] <- a + b*tannin[i]  
+  }
+  
+  # priors
+  a ~ dnorm(0, 0.001)
+  b ~ dnorm(0, 0.001)
+  sigma ~ dunif(0, 100)
+  tau <- 1/(sigma*sigma)
+  
+}

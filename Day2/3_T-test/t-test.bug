@@ -2,8 +2,8 @@
 model
 {
   # priors
-    mu.f ~ dnorm(0, 0.001) 
-    mu.m ~ dnorm(0, 0.001)
+    mu.f ~ dunif(0, 1000) 
+    mu.m ~ dunif(0, 1000)
     tau <- 1/(sigma*sigma)   ## Note: tau = 'precision' = 1/variance
     sigma ~ dunif(0,100)
   
@@ -19,7 +19,7 @@ model
       y.m[j] ~ dnorm(mu.m, tau)
     }
 
-  # derived quantity:
-    delta <- mu.f - mu.m
-
+  # derived quantity
+  delta <- mu.f - mu.m
+  
 }    
