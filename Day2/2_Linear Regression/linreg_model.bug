@@ -1,0 +1,24 @@
+
+  model
+  {
+    # priors
+    a ~ dnorm(0, 0.001) # intercept
+    b ~ dnorm(0, 0.001) # slope
+    sigma ~ dunif(0, 100) # SD 
+  
+    # JAGS is strange, it uses precision instead of SD
+    tau <- 1/(sigma*sigma) # precision
+    
+    # likelihood
+    for(i in 1:N)
+    {
+      mu[i] <- a + b*tannin[i]
+      growth[i] ~ dnorm(mu[i], tau)
+    }
+  
+    # predictions
+    for(i in 1:N)
+    {
+      prediction[i] ~ dnorm(mu[i], tau) 
+    }
+  }

@@ -169,10 +169,17 @@ fitted.model <- jags(data=my.data,
   plot(as.mcmc(fitted.model))
 ```
 
+
 ## JAGS - exploring the model with ```ggplot```
 
 ```{r, message = FALSE, warning = FALSE}
   library(ggmcmc)
+```
+
+## JAGS - exploring the model with ```ggplot```
+
+```{r}
+  ggs_traceplot(ggs(as.mcmc(fitted.model)))
 ```
 
 ## JAGS - exploring the model with ```ggplot```
@@ -186,5 +193,13 @@ fitted.model <- jags(data=my.data,
 ```{r}
   ggs_caterpillar(ggs(as.mcmc(fitted.model)))
 ```
+
+## JAGS - exploring the model with ```ggplot```
+
+```{r, message = FALSE, warning = FALSE}
+  library(mcmcplots)
+  caterplot(fitted.model)
+```
+
 
 
