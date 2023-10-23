@@ -546,7 +546,7 @@ For any $A_i$: $Pr(A_i|B) = \frac{Pr(B|A_i)Pr(A_i)}{Pr(B|A_1)Pr(A_1) + ... + Pr(
 
 [^3]: Law of Total Probability
 
-## What do we do with Pr(A)
+## What do we do with Pr(A|B)
 
 ```{r}
 Gaussian_mass <- dnorm(seq(-3, 3, .1))
